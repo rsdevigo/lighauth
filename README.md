@@ -1,3 +1,24 @@
+# SAUTH - Simple Authentication protocol based on levels
+
+## O que é o SAUTH ?
+
+Um protocolo simples de autenticação baseado em níveis.
+
+## O que este repositório possui ?
+
+Um 
+
+
+
+## Protocol
+
+### Client side
+
+#### How to create a sign
+
+### Server side
+
+
 [![MEAN.JS Logo](http://meanjs.org/img/logo-small.png)](http://meanjs.org/)
 
 [![Build Status](https://travis-ci.org/meanjs/mean.svg?branch=master)](https://travis-ci.org/meanjs/mean)
