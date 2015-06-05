@@ -65,7 +65,7 @@ Por exemplo se desejo autenticar uma credencial de nível 2, minha requisição 
 
 ## O que este repositório possui:
 
-Uma aplicação escrita em javascript utilizando o [MEAN.JS](http://meanjs.org/) que implementa esse protocolo de uma forma genérica, onde é capaz, utilizando um GUI ou uma [Admin API](#admin-api), cadastrar níveis de autenticação e credenciais para cada nível além de oferecer também um endpoint da API capaz de autenticar uma requisição que utiliza o protocolo.
+Uma aplicação escrita em javascript utilizando o [MEAN.JS](http://meanjs.org/) que implementa esse protocolo de uma forma genérica, onde é capaz, utilizando um GUI ou uma [Admin API](#admin-api), cadastrar níveis de autenticação e credenciais para cada nível além de oferecer também um endpoint da API ([/credentials/authenticate](#authenticate-a-credential)) capaz de autenticar uma requisição que utiliza o protocolo.
 
 Essa aplicação possui um sistema de login e criação de conta para acesso ao GUI, por email ou por alguma rede social, para sua configuração adicione nos arquivos sua credenciais de aplicativos das redes sociais:
 - ./config/env/development.js
@@ -331,7 +331,7 @@ Success-Response (example):
  {
     "_id": 4712,
     "description": "Credential of a application Y2",
-    "token": "4125613241792683124asdqweUOQKWOEK",
+    "token": "4125613241792683124asdqwe",
     "level": {
     	"_id": 4332,
     	"name":"Application",
@@ -364,7 +364,7 @@ As described in section [Protocolo](#protocolo).
 CURL example:
 ```
   curl -i -X GET http://localhost:3000/credentials/authenticate
- 		-H 'x-sauth-application-key: 4712' \
+ 		-H 'x-sauth-application-key: 4711' \
  		-H 'x-sauth-application-signature: c996517ce02c23eec0ee8ada2ef2d6af29d7295d' \
  		-H 'x-sauth-time: 123'
 ```
