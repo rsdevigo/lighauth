@@ -8,7 +8,7 @@ module.exports = function(app) {
 	app.route('/credentials')
 		.get(credentials.list)
 		.post(credentials.create);
-	app.route('/credentials/authorize')
+	app.route('/credentials/authenticate')
 		.get(credentials.authorize);
 
 	app.route('/credentials/:credentialId')
