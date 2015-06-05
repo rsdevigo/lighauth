@@ -5,13 +5,14 @@ var should = require('should'),
 	app = require('../../server'),
 	mongoose = require('mongoose'),
 	User = mongoose.model('User'),
+	Level = mongoose.model('Level'),
 	Credential = mongoose.model('Credential'),
 	agent = request.agent(app);
 
 /**
  * Globals
  */
-var credentials, user, credential;
+var credentials, user, credential, level;
 
 /**
  * Credential routes tests
@@ -37,12 +38,23 @@ describe('Credential CRUD tests', function() {
 
 		// Save a user to the test db and create new Credential
 		user.save(function() {
-			credential = {
-				name: 'Credential Name'
-			};
+			level = new Level({
+				name: 'Application',
+				order: 1,
+				user: user
+			});
 
-			done();
+			level.save(function() { 
+				credential = new Credential({
+					description: 'Credential Name',
+					user: user,
+					level: level
+				});
+
+				done();
+			});
 		});
+
 	});
 
 	it('should be able to save Credential instance if logged in', function(done) {
@@ -75,7 +87,7 @@ describe('Credential CRUD tests', function() {
 
 								// Set assertions
 								(credentials[0].user._id).should.equal(userId);
-								(credentials[0].name).should.match('Credential Name');
+								(credentials[0].description).should.match('Credential Name');
 
 								// Call the assertion callback
 								done();
@@ -87,16 +99,35 @@ describe('Credential CRUD tests', function() {
 	it('should not be able to save Credential instance if not logged in', function(done) {
 		agent.post('/credentials')
 			.send(credential)
-			.expect(401)
+			.expect(200)
 			.end(function(credentialSaveErr, credentialSaveRes) {
 				// Call the assertion callback
-				done(credentialSaveErr);
+				var userId = user.id;
+
+				if (credentialSaveErr) done(credentialSaveErr);
+
+						// Get a list of Credentials
+						agent.get('/credentials')
+							.end(function(credentialsGetErr, credentialsGetRes) {
+								// Handle Credential save error
+								if (credentialsGetErr) done(credentialsGetErr);
+
+								// Get Credentials list
+								var credentials = credentialsGetRes.body;
+
+								// Set assertions
+								(credentials[0].user._id).should.equal(userId);
+								(credentials[0].description).should.match('Credential Name');
+
+								// Call the assertion callback
+								done();
+							});
 			});
 	});
 
-	it('should not be able to save Credential instance if no name is provided', function(done) {
+	it('should not be able to save Credential instance if no description is provided', function(done) {
 		// Invalidate name field
-		credential.name = '';
+		credential.description = '';
 
 		agent.post('/auth/signin')
 			.send(credentials)
@@ -114,7 +145,7 @@ describe('Credential CRUD tests', function() {
 					.expect(400)
 					.end(function(credentialSaveErr, credentialSaveRes) {
 						// Set message assertion
-						(credentialSaveRes.body.message).should.match('Please fill Credential name');
+						(credentialSaveRes.body.message).should.match('Please fill Credential description');
 						
 						// Handle Credential save error
 						done(credentialSaveErr);
@@ -142,7 +173,7 @@ describe('Credential CRUD tests', function() {
 						if (credentialSaveErr) done(credentialSaveErr);
 
 						// Update Credential name
-						credential.name = 'WHY YOU GOTTA BE SO MEAN?';
+						credential.description = 'WHY YOU GOTTA BE SO MEAN?';
 
 						// Update existing Credential
 						agent.put('/credentials/' + credentialSaveRes.body._id)
@@ -154,7 +185,7 @@ describe('Credential CRUD tests', function() {
 
 								// Set assertions
 								(credentialUpdateRes.body._id).should.equal(credentialSaveRes.body._id);
-								(credentialUpdateRes.body.name).should.match('WHY YOU GOTTA BE SO MEAN?');
+								(credentialUpdateRes.body.description).should.match('WHY YOU GOTTA BE SO MEAN?');
 
 								// Call the assertion callback
 								done();
@@ -192,7 +223,7 @@ describe('Credential CRUD tests', function() {
 			request(app).get('/credentials/' + credentialObj._id)
 				.end(function(req, res) {
 					// Set assertion
-					res.body.should.be.an.Object.with.property('name', credential.name);
+					res.body.should.be.an.Object.with.property('description', credential.description);
 
 					// Call the assertion callback
 					done();
@@ -238,26 +269,31 @@ describe('Credential CRUD tests', function() {
 	});
 
 	it('should not be able to delete Credential instance if not signed in', function(done) {
-		// Set Credential user 
-		credential.user = user;
+		var userId = user.id;
 
-		// Create new Credential model instance
-		var credentialObj = new Credential(credential);
+		// Save a new Credential
+		agent.post('/credentials')
+			.send(credential)
+			.expect(200)
+			.end(function(credentialSaveErr, credentialSaveRes) {
+				// Handle Credential save error
+				if (credentialSaveErr) done(credentialSaveErr);
 
-		// Save the Credential
-		credentialObj.save(function() {
-			// Try deleting Credential
-			request(app).delete('/credentials/' + credentialObj._id)
-			.expect(401)
-			.end(function(credentialDeleteErr, credentialDeleteRes) {
-				// Set message assertion
-				(credentialDeleteRes.body.message).should.match('User is not logged in');
+				// Delete existing Credential
+				agent.delete('/credentials/' + credentialSaveRes.body._id)
+					.send(credential)
+					.expect(200)
+					.end(function(credentialDeleteErr, credentialDeleteRes) {
+						// Handle Credential error error
+						if (credentialDeleteErr) done(credentialDeleteErr);
 
-				// Handle Credential error error
-				done(credentialDeleteErr);
+						// Set assertions
+						(credentialDeleteRes.body._id).should.equal(credentialSaveRes.body._id);
+
+						// Call the assertion callback
+						done();
+					});
 			});
-
-		});
 	});
 
 	afterEach(function(done) {

@@ -6,12 +6,13 @@
 var should = require('should'),
 	mongoose = require('mongoose'),
 	User = mongoose.model('User'),
+	Level = mongoose.model('Level'),
 	Credential = mongoose.model('Credential');
 
 /**
  * Globals
  */
-var user, credential;
+var user, credential, level;
 
 /**
  * Unit tests
@@ -27,13 +28,22 @@ describe('Credential Model Unit Tests:', function() {
 			password: 'password'
 		});
 
-		user.save(function() { 
-			credential = new Credential({
-				name: 'Credential Name',
+		user.save(function() {
+			level = new Level({
+				name: 'Application',
+				order: 1,
 				user: user
 			});
 
-			done();
+			level.save(function() { 
+				credential = new Credential({
+					description: 'Credential Name',
+					user: user,
+					level: level
+				});
+
+				done();
+			});
 		});
 	});
 
@@ -45,8 +55,8 @@ describe('Credential Model Unit Tests:', function() {
 			});
 		});
 
-		it('should be able to show an error when try to save without name', function(done) { 
-			credential.name = '';
+		it('should be able to show an error when try to save without description', function(done) { 
+			credential.description = '';
 
 			return credential.save(function(err) {
 				should.exist(err);
@@ -58,7 +68,7 @@ describe('Credential Model Unit Tests:', function() {
 	afterEach(function(done) { 
 		Credential.remove().exec();
 		User.remove().exec();
-
+		Level.remove().exec();
 		done();
 	});
 });

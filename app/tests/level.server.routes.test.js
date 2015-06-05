@@ -38,7 +38,9 @@ describe('Level CRUD tests', function() {
 		// Save a user to the test db and create new Level
 		user.save(function() {
 			level = {
-				name: 'Level Name'
+				name: 'Level Name',
+				user: user.id,
+				order: 1
 			};
 
 			done();
@@ -52,7 +54,6 @@ describe('Level CRUD tests', function() {
 			.end(function(signinErr, signinRes) {
 				// Handle signin error
 				if (signinErr) done(signinErr);
-
 				// Get the userId
 				var userId = user.id;
 
@@ -85,12 +86,30 @@ describe('Level CRUD tests', function() {
 	});
 
 	it('should not be able to save Level instance if not logged in', function(done) {
+		var userId = user.id;
 		agent.post('/levels')
 			.send(level)
-			.expect(401)
+			.expect(200)
 			.end(function(levelSaveErr, levelSaveRes) {
-				// Call the assertion callback
-				done(levelSaveErr);
+				// Handle Level save error
+				if (levelSaveErr) done(levelSaveErr);
+
+				// Get a list of Levels
+				agent.get('/levels')
+					.end(function(levelsGetErr, levelsGetRes) {
+						// Handle Level save error
+						if (levelsGetErr) done(levelsGetErr);
+
+						// Get Levels list
+						var levels = levelsGetRes.body;
+
+						// Set assertions
+						(levels[0].user._id).should.equal(userId);
+						(levels[0].name).should.match('Level Name');
+
+						// Call the assertion callback
+						done();
+					});
 			});
 	});
 
@@ -239,25 +258,32 @@ describe('Level CRUD tests', function() {
 
 	it('should not be able to delete Level instance if not signed in', function(done) {
 		// Set Level user 
-		level.user = user;
 
-		// Create new Level model instance
-		var levelObj = new Level(level);
+		var userId = user.id;
 
-		// Save the Level
-		levelObj.save(function() {
-			// Try deleting Level
-			request(app).delete('/levels/' + levelObj._id)
-			.expect(401)
-			.end(function(levelDeleteErr, levelDeleteRes) {
-				// Set message assertion
-				(levelDeleteRes.body.message).should.match('User is not logged in');
+		// Save a new Level
+		agent.post('/levels')
+			.send(level)
+			.expect(200)
+			.end(function(levelSaveErr, levelSaveRes) {
+				// Handle Level save error
+				if (levelSaveErr) done(levelSaveErr);
 
-				// Handle Level error error
-				done(levelDeleteErr);
+				// Delete existing Level
+				agent.delete('/levels/' + levelSaveRes.body._id)
+					.send(level)
+					.expect(200)
+					.end(function(levelDeleteErr, levelDeleteRes) {
+						// Handle Level error error
+						if (levelDeleteErr) done(levelDeleteErr);
+
+						// Set assertions
+						(levelDeleteRes.body._id).should.equal(levelSaveRes.body._id);
+
+						// Call the assertion callback
+						done();
+					});
 			});
-
-		});
 	});
 
 	afterEach(function(done) {

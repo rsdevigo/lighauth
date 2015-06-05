@@ -6,7 +6,7 @@ angular.module('credentials').controller('CredentialsController', ['$scope', '$s
 		$scope.authentication = Authentication;
 
 		$scope.levels = Levels.query();
-		$scope.level = null;
+		$scope.level = {_id : null};
 		// Create new Credential
 		$scope.create = function() {
 

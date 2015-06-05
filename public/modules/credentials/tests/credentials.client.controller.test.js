@@ -35,7 +35,7 @@
 		// The injector ignores leading and trailing underscores here (i.e. _$httpBackend_).
 		// This allows us to inject a service but then attach it to a variable
 		// with the same name as the service.
-		beforeEach(inject(function($controller, $rootScope, _$location_, _$stateParams_, _$httpBackend_) {
+		beforeEach(inject(function($controller, $rootScope, _$location_, _$stateParams_, _$httpBackend_, Levels) {
 			// Set a new global scope
 			scope = $rootScope.$new();
 
@@ -48,12 +48,23 @@
 			CredentialsController = $controller('CredentialsController', {
 				$scope: scope
 			});
+
+			var sampleLevel = new Levels({
+				name: 'New Level'
+			});
+
+			// Create a sample Levels array that includes the new Level
+			var sampleLevels = [sampleLevel];
+
+			// Set GET response
+			$httpBackend.expectGET('levels').respond(sampleLevels);
 		}));
 
 		it('$scope.find() should create an array with at least one Credential object fetched from XHR', inject(function(Credentials) {
 			// Create sample Credential using the Credentials service
 			var sampleCredential = new Credentials({
-				name: 'New Credential'
+				description: 'New Credential',
+				level: null
 			});
 
 			// Create a sample Credentials array that includes the new Credential
@@ -73,7 +84,8 @@
 		it('$scope.findOne() should create an array with one Credential object fetched from XHR using a credentialId URL parameter', inject(function(Credentials) {
 			// Define a sample Credential object
 			var sampleCredential = new Credentials({
-				name: 'New Credential'
+				description: 'New Credential',
+				level: null
 			});
 
 			// Set the URL parameter
@@ -93,17 +105,19 @@
 		it('$scope.create() with valid form data should send a POST request with the form input values and then locate to new object URL', inject(function(Credentials) {
 			// Create a sample Credential object
 			var sampleCredentialPostData = new Credentials({
-				name: 'New Credential'
+				description: 'New Credential',
+				level: null
 			});
 
 			// Create a sample Credential response
 			var sampleCredentialResponse = new Credentials({
 				_id: '525cf20451979dea2c000001',
-				name: 'New Credential'
+				description: 'New Credential',
+				level: null
 			});
 
 			// Fixture mock form input values
-			scope.name = 'New Credential';
+			scope.description = 'New Credential';
 
 			// Set POST response
 			$httpBackend.expectPOST('credentials', sampleCredentialPostData).respond(sampleCredentialResponse);
@@ -113,7 +127,7 @@
 			$httpBackend.flush();
 
 			// Test form inputs are reset
-			expect(scope.name).toEqual('');
+			expect(scope.description).toEqual('');
 
 			// Test URL redirection after the Credential was created
 			expect($location.path()).toBe('/credentials/' + sampleCredentialResponse._id);
@@ -123,7 +137,7 @@
 			// Define a sample Credential put data
 			var sampleCredentialPutData = new Credentials({
 				_id: '525cf20451979dea2c000001',
-				name: 'New Credential'
+				description: 'New Credential'
 			});
 
 			// Mock Credential in scope
@@ -135,6 +149,8 @@
 			// Run controller functionality
 			scope.update();
 			$httpBackend.flush();
+
+			
 
 			// Test URL location to new object
 			expect($location.path()).toBe('/credentials/' + sampleCredentialPutData._id);
