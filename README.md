@@ -350,6 +350,75 @@ Error-Response (example):
  }
 ```
 
+### Authenticate a Credential
+```
+PUT /credentials/authenticate
+```
+
+#### Parameters
+
+As described in section [Protocolo](#protocolo).
+
+#### Examples
+
+CURL example:
+```
+  curl -i -X GET http://localhost:3000/credentials/authenticate
+ 		-H 'x-sauth-application-key: 4712' \
+ 		-H 'x-sauth-application-signature: c996517ce02c23eec0ee8ada2ef2d6af29d7295d' \
+ 		-H 'x-sauth-time: 123'
+```
+
+#### Success Response
+Success-Response (example):
+```
+ HTTP/1.1 200 OK
+ {
+    "message": true
+ }
+```
+
+#### Error Response
+Error-Response (example) if the number of keys is different of the nubmer of signatures:
+```
+ HTTP/1.1 400 Bad Request
+ {
+    "message": "number of signatures headers and keys headers do not match"
+ }
+```
+
+Error-Response (example) if has the credential is the level *n* and is missing the some *n-1* levels header:
+```
+ HTTP/1.1 400 Bad Request
+ {
+    "message": "x-sauth-application-signature header missing, level: application"
+ }
+```
+
+Error-Response (example) if occurrs some error when tries to get the credentials in mongodb:
+```
+ HTTP/1.1 500 Internal Server Error
+ {
+    "message": "Ops ! Something is Wrong! When we tries get the credentials"
+ }
+```
+
+Error-Response (example) if the x-sauth-time is missing:
+```
+ HTTP/1.1 400 Bad Request
+ {
+    "message": "x-sauth-time is missing"
+ }
+```
+
+Error-Response (example) if the signature does not match the given set by the server:
+```
+ HTTP/1.1 401 Unauthorized
+ {
+    "message": "Signature with key 4712 is invalid."
+ }
+```
+
 ## Level
 ### Read data of a Level
 ```
