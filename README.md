@@ -65,7 +65,7 @@ Por exemplo se desejo autenticar uma credencial de nível 2, minha requisição 
 
 ## O que este repositório possui:
 
-Uma aplicação escrita em javascript utilizando o [MEAN.JS](http://meanjs.org/) que implementa esse protocolo de uma forma genérica, onde é capaz utilizando um GUI ou uma API REST cadastrar níveis de autenticação e credenciais para cada nível além de oferecer também um endpoint da API capaz de autenticar uma requisição que utiliza o protocolo.
+Uma aplicação escrita em javascript utilizando o [MEAN.JS](http://meanjs.org/) que implementa esse protocolo de uma forma genérica, onde é capaz, utilizando um GUI ou uma [Admin API](#admin-api), cadastrar níveis de autenticação e credenciais para cada nível além de oferecer também um endpoint da API capaz de autenticar uma requisição que utiliza o protocolo.
 
 Essa aplicação possui um sistema de login e criação de conta para acesso ao GUI, por email ou por alguma rede social, para sua configuração adicione nos arquivos sua credenciais de aplicativos das redes sociais:
 - ./config/env/development.js
@@ -74,7 +74,7 @@ Essa aplicação possui um sistema de login e criação de conta para acesso ao 
 
 A API da aplicação é pública, por isso, cuide de restringir o acesso a porta da aplicação.
 
-As seções seguintes lhe ensina como instanciar a aplicaçã tal como as rotas das [Admin API][] API de administração.
+As seções seguintes lhe ensina como instanciar a aplicaçã tal como as rotas das [Admin API](#admin-api).
 
 ## Before You Begin
 Before you begin we recommend you read about the basic building blocks that assemble a MEAN.JS application: 
