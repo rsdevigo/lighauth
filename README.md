@@ -67,14 +67,14 @@ Por exemplo se desejo autenticar uma credencial de nível 2, minha requisição 
 
 Uma aplicação escrita em javascript utilizando o [MEAN.JS](http://meanjs.org/) que implementa esse protocolo de uma forma genérica, onde é capaz utilizando um GUI ou uma API REST cadastrar níveis de autenticação e credenciais para cada nível além de oferecer também um endpoint da API capaz de autenticar uma requisição que utiliza o protocolo.
 
-Essa aplicação possui um sistema de login e criação de conta para acesso ao sistema, por email ou por alguma rede social, para sua configuração adicione nos arquivos sua credenciais de aplicativos das redes sociais:
+Essa aplicação possui um sistema de login e criação de conta para acesso ao GUI, por email ou por alguma rede social, para sua configuração adicione nos arquivos sua credenciais de aplicativos das redes sociais:
 - ./config/env/development.js
 - ./config/env/production.js
 - ./config/env/secure.js
 
 A API da aplicação é pública, por isso, cuide de restringir o acesso a porta da aplicação.
 
-As seções seguintes lhe ensina como instanciar a aplicaçã tal como as rotas das API de administração.
+As seções seguintes lhe ensina como instanciar a aplicaçã tal como as rotas das [Admin API][] API de administração.
 
 ## Before You Begin
 Before you begin we recommend you read about the basic building blocks that assemble a MEAN.JS application: 
@@ -159,3 +159,358 @@ $ sh generate-ssl-certs.sh
 ```
 Windows users can follow instructions found [here](http://www.websense.com/support/article/kbarticle/How-to-use-OpenSSL-and-Microsoft-Certification-Authority)
 To generate the key and certificate and place them in the *config/sslcert* folder.
+
+## Admin API
+
+## Credential
+### Read data of a Credential
+```
+GET /credentials/:id
+```
+
+#### Parameters
+
+| Name | Type	| Description		|
+| ---- | ------ | ------------------|
+| id   | String| The Credential ID  |
+
+#### Examples
+
+CURL example:
+```
+ curl -i -X GET http://localhost:3000/credentials/4711
+```
+
+#### Success Response
+Success-Response (example):
+```
+ HTTP/1.1 200 OK
+ {
+    "_id": 4711,
+    "description": "Credential of a application X",
+    "token": "4125613241792683124asdqweUOQKWOEK",
+    "level": {
+    	"_id": 4332,
+    	"name":"Application",
+    	"order": 1
+	},
+	"ref": 3456
+ }
+```
+
+#### Error Response
+Error-Response (example):
+```
+ HTTP/1.1 400 Bad Request
+ {
+    "message": "The error description"
+ }
+```
+
+### Create a Credential
+```
+POST /credentials
+```
+
+#### Parameters
+
+| Name 			| Type	 	| Description		  |
+| ------------- | ------ 	| ------------------ |
+| description   | String 	| The Credential description  |
+| level         | ObjectId 	| The Credential level ID  |
+| ref   		| String 	| The Credential custom code to ref a third-party system  |
+
+#### Examples
+
+CURL example:
+```
+ curl -i -X POST http://localhost:3000/credentials
+ 		-H 'Content-Type: application/json' \
+        -d '{ 
+        		"description": "Credential of a application Y",
+        		"level" : "4332",
+        		"ref" : "3457"
+       		}'
+```
+
+#### Success Response
+Success-Response (example):
+```
+ HTTP/1.1 200 OK
+ {
+    "_id": 4712,
+    "description": "Credential of a application Y",
+    "token": "4125613241792683124asdqwe",
+    "level": "4332",
+	"ref": 3457
+ }
+```
+
+#### Error Response
+Error-Response (example):
+```
+ HTTP/1.1 400 Bad Request
+ {
+    "message": "The error description"
+ }
+```
+
+### Remove a Credential
+```
+DELETE /credentials/:id
+```
+
+#### Parameters
+
+| Name | Type	| Description		|
+| ---- | ------ | ------------------|
+| id   | String| The Credential ID  |
+
+#### Examples
+
+CURL example:
+```
+ curl -i -X DELETE http://localhost:3000/credentials/4711
+```
+
+#### Success Response
+Success-Response (example):
+```
+ HTTP/1.1 200 OK
+ {
+    "_id": 4711,
+    "description": "Credential of a application X",
+    "token": "4125613241792683124asdqweUOQKWOEK",
+    "level": {
+    	"_id": 4332,
+    	"name":"Application",
+    	"order": 1
+	},
+	"ref": 3456
+ }
+```
+
+#### Error Response
+Error-Response (example):
+```
+ HTTP/1.1 400 Bad Request
+ {
+    "message": "The error description"
+ }
+```
+
+### Update a Credential
+```
+PUT /credentials/:id
+```
+
+#### Parameters
+
+| Name | Type	| Description		|
+| ---- | ------ | ------------------|
+| id   | String| The Credential ID  |
+| description   | String 	| The Credential description  |
+| level         | ObjectId 	| The Credential level ID  |
+| ref   		| String 	| The Credential custom code to ref a third-party system  |
+
+#### Examples
+
+CURL example:
+```
+  curl -i -X PUT http://localhost:3000/credentials/4172
+ 		-H 'Content-Type: application/json' \
+        -d '{ 
+        		"description": "Credential of a application Y2",
+       		}'
+```
+
+#### Success Response
+Success-Response (example):
+```
+ HTTP/1.1 200 OK
+ {
+    "_id": 4712,
+    "description": "Credential of a application Y2",
+    "token": "4125613241792683124asdqweUOQKWOEK",
+    "level": {
+    	"_id": 4332,
+    	"name":"Application",
+    	"order": 1
+	},
+	"ref": 3456
+ }
+```
+
+#### Error Response
+Error-Response (example):
+```
+ HTTP/1.1 400 Bad Request
+ {
+    "message": "The error description"
+ }
+```
+
+## Level
+### Read data of a Level
+```
+GET /levels/:id
+```
+
+#### Parameters
+
+| Name | Type	| Description		|
+| ---- | ------ | ------------------|
+| id   | String| The Level ID  |
+
+#### Examples
+
+CURL example:
+```
+ curl -i -X GET http://localhost:3000/levels/4332
+```
+
+#### Success Response
+Success-Response (example):
+```
+ HTTP/1.1 200 OK
+ {
+    "_id": 4332,
+    "name": "Application",
+    "order": 1
+ }
+```
+
+#### Error Response
+Error-Response (example):
+```
+ HTTP/1.1 400 Bad Request
+ {
+    "message": "The error description"
+ }
+```
+
+### Create a Level
+```
+POST /levels
+```
+
+#### Parameters
+
+| Name 			| Type	 	| Description		  |
+| ------------- | ------ 	| ------------------ |
+| name   | String 	| The Level name  |
+| order         | Number 	| The Level priority  |
+
+#### Examples
+
+CURL example:
+```
+ curl -i -X POST http://localhost:3000/levels
+ 		-H 'Content-Type: application/json' \
+        -d '{ 
+        		"name": "User",
+        		"order" : "2"
+       		}'
+```
+
+#### Success Response
+Success-Response (example):
+```
+ HTTP/1.1 200 OK
+ {
+    "_id": 4333,
+    "name": "User",
+    "order": 2
+ }
+```
+
+#### Error Response
+Error-Response (example):
+```
+ HTTP/1.1 400 Bad Request
+ {
+    "message": "The error description"
+ }
+```
+
+### Remove a Credential
+```
+DELETE /levels/:id
+```
+
+#### Parameters
+
+| Name | Type	| Description		|
+| ---- | ------ | ------------------|
+| id   | String| The Level ID  |
+
+#### Examples
+
+CURL example:
+```
+ curl -i -X DELETE http://localhost:3000/levels/4332
+```
+
+#### Success Response
+Success-Response (example):
+```
+ HTTP/1.1 200 OK
+ {
+    "_id": 4332,
+    "name": "Application",
+    "order": 1
+ }
+```
+
+#### Error Response
+Error-Response (example):
+```
+ HTTP/1.1 400 Bad Request
+ {
+    "message": "The error description"
+ }
+```
+
+### Update a Level
+```
+PUT /levels/:id
+```
+
+#### Parameters
+
+| Name | Type	| Description		|
+| ---- | ------ | ------------------|
+| id   | String| The Level ID  |
+| name   | String 	| The Level name  |
+| order         | Number 	| The Level priority  |
+
+#### Examples
+
+CURL example:
+```
+  curl -i -X PUT http://localhost:3000/levels/4333
+ 		-H 'Content-Type: application/json' \
+        -d '{ 
+        		"description": "Browser",
+       		}'
+```
+
+#### Success Response
+Success-Response (example):
+```
+ HTTP/1.1 200 OK
+ {
+    "_id": 4333,
+    "name": "Browser",
+    "order": 2
+ }
+```
+
+#### Error Response
+Error-Response (example):
+```
+ HTTP/1.1 400 Bad Request
+ {
+    "message": "The error description"
+ }
+```
