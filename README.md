@@ -1,5 +1,5 @@
 # SAUTH - Simple Authentication protocol based on levels
-
+[![Build Status](https://travis-ci.org/rsdevigo/sauth.svg?branch=master)](https://travis-ci.org/rsdevigo/sauth)
 ## Protocolo
 
 O protocolo SAUTH, é um protocolo onde sua autenticação acontece por níveis que contém prioridade de execução.
